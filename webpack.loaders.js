@@ -14,6 +14,22 @@ const sassResourcesPaths = [
 ];
 
 module.exports = [
+  // =======================
+  // = External SourceMaps =
+  // =======================
+  // Get source maps from external node packages
+  // This is useful when you are developing npm packages and
+  // you `npm link`-ed them in your project for test
+  {
+    test: /\.js?$/,
+    include: [
+      // path.resolve doesn't work: https://github.com/webpack-contrib/source-map-loader/issues/40
+      // fs.realpathSync('./node_modules/my-package'),
+      // fs.realpathSync('./node_modules/my-other-package')
+    ],
+    loader: "source-map-loader",
+    enforce: "pre"  // This means this is a Preloader (comes before)
+  },
   // =========
   // = Babel =
   // =========
@@ -115,6 +131,11 @@ module.exports = [
   // ==========
   // = Styles =
   // ==========
+  // Loaders can be chained by passing multiple loaders, which will be applied from right to left (last to first configured):
+  //    - css-loader takes a CSS file and reads off all its dependencies
+  //    - style-loader will embed those styles directly into the markup (not when using dev-server)
+  // TODO: for prod ==> loader: ExtractTextPlugin.extract('style-loader', 'css-loader')
+
   // Global CSS (from node_modules)
   // ==============================
   {
